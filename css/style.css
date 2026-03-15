@@ -306,6 +306,32 @@ kbd {
   margin-left: 2px;
 }
 
+/* ── 웨이브 카운트다운 HUD (상단 소형) ── */
+.rest-hud {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 5, 20, 0.78);
+  border: 1px solid rgba(100, 160, 255, 0.28);
+  border-radius: 20px;
+  padding: 4px 16px;
+  font-size: 12px;
+  color: #93c5fd;
+  letter-spacing: 0.06em;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.rest-hud-timer {
+  font-weight: bold;
+  font-size: 15px;
+  color: #ffffff;
+}
+
 /* ── 게임오버 ── */
 #gameover-stats {
   margin: 16px 0 24px;

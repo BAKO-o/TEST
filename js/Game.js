@@ -9,7 +9,7 @@
 
 'use strict';
 
-const VERSION = 'v0.9.1'; // 티어 스케일링: 적 크기 1.2^(tier-1), 저티어 피해 면역
+const VERSION = 'v0.9.5'; // 조립 UI 모듈 드래그&드롭 이동
 
 // ── 맵 설정 (16배 넓어진 월드)
 const WORLD_W = 12800;
@@ -44,6 +44,9 @@ const Game = (() => {
 
   // ── 엔티티
   let player = null;
+
+  // ── 인벤토리 패널 표시 여부
+  let inventoryOpen = false;
 
   // ── 별 배경 데이터 (화면 좌표 기반, 시차 스크롤 없음)
   let stars = [];
@@ -115,18 +118,14 @@ const Game = (() => {
       }
     },
     {
-      id: 'hak_heal', icon: '💉', name: '학: 긴급 수리',
-      desc: 'HP +30 즉시 회복',
-      apply: (p) => { p.hp = Math.min(p.maxHp, p.hp + 30); }
+      id: 'hak_repair', icon: '🔧', name: '학: 긴급 수리',
+      desc: '장착 장갑판 내구도 전량 회복 · 스크랩 +25',
+      apply: (p) => { TetrisGrid.repairAllHull(); p.scrap += 25; }
     },
     {
-      id: 'jong_armor', icon: '🛡️', name: '종: 장갑 보강',
-      desc: '최대 HP +50 · 피해감소 +10%',
-      apply: (p) => {
-        p.maxHp += 50;
-        p.hp = Math.min(p.maxHp, p.hp + 50);
-        p.armorReduction = Math.min(0.75, (p.armorReduction || 0) + 0.10);
-      }
+      id: 'jong_armor', icon: '🛡️', name: '종: 장갑 강화',
+      desc: '현재 장착 장갑판 최대 내구도 +50%',
+      apply: () => { TetrisGrid.boostHullMaxHp(1.5); }
     },
     {
       id: 'jong_bulkhead', icon: '⚙️', name: '종: 함체 증설',
@@ -265,6 +264,9 @@ const Game = (() => {
     elOverlayLevelup.classList.toggle('hidden',  state !== STATE.LEVELUP);
     elOverlayGameover.classList.toggle('hidden', state !== STATE.GAMEOVER);
 
+    // 조립/레벨업 진입 시 인벤토리 닫기
+    if (newState === STATE.BUILDING || newState === STATE.LEVELUP) inventoryOpen = false;
+
     // 휴식 오버레이: PLAYING이 아닌 상태(레벨업·조립·일시정지)로 전환 시 즉시 숨김
     // → 레벨업 카드나 모듈 조립창이 앞에 보여야 함
     // PLAYING으로 복귀 시 updateHUD()가 isResting 여부에 따라 다시 표시함
@@ -326,7 +328,8 @@ const Game = (() => {
       update(dt);
     } else if (state === STATE.PAUSED) {
       // 일시정지 중에도 P/ESC 입력을 소비해 재개 가능하게 처리
-      if (InputHandler.consumePause()) togglePause();
+      if (InputHandler.consumePause()) { inventoryOpen = false; togglePause(); }
+      if (InputHandler.consumeInventory()) inventoryOpen = !inventoryOpen;
     } else if (state === STATE.BUILDING) {
       updateBuilding(dt);
     }
@@ -344,9 +347,13 @@ const Game = (() => {
 
   function update(dt) {
     elapsedTime += dt;
+    TetrisGrid.updateFlash(dt);
 
     // 일시정지 토글
     if (InputHandler.consumePause()) { togglePause(); return; }
+
+    // 인벤토리 토글 (I 키)
+    if (InputHandler.consumeInventory()) { inventoryOpen = !inventoryOpen; }
 
     // Q키: 보유 모듈 있을 때 조립 화면 열기
     if (InputHandler.consumeOpenAssembly()) {
@@ -408,15 +415,31 @@ const Game = (() => {
       setState(STATE.PLAYING);
       return;
     }
-    // 클릭: 유효 슬롯에 배치 시도 (슬롯 포화 시 교체 모드)
+    // 클릭(mousedown): 드래그 시작 시도 → 아니면 일반 배치
     if (InputHandler.consumeClick()) {
       const { cx, cy } = screenCenter();
-      const placed = TetrisGrid.handleClick(
-        InputHandler.state.mouseX,
-        InputHandler.state.mouseY,
-        cx, cy, player
-      );
-      if (placed) setState(STATE.PLAYING);
+      const mx = InputHandler.state.mouseX, my = InputHandler.state.mouseY;
+      const gx = Math.round((mx - cx) / 22);
+      const gy = Math.round((my - cy) / 22);
+      const startedDrag = TetrisGrid.tryStartDrag(gx, gy, player);
+      if (!startedDrag) {
+        const placed = TetrisGrid.handleClick(mx, my, cx, cy, player);
+        if (placed) setState(STATE.PLAYING);
+      }
+    }
+
+    // mouseup: 드래그 중이면 드롭 처리
+    if (InputHandler.consumeMouseReleased()) {
+      if (TetrisGrid.isDragging()) {
+        const { cx, cy } = screenCenter();
+        TetrisGrid.endDrag(
+          InputHandler.state.mouseX,
+          InputHandler.state.mouseY,
+          cx, cy, player
+        );
+        // 드롭 후 pending이 없으면 (원래 pending도 없었을 경우) 조립 UI 닫기
+        if (!TetrisGrid.hasQueued()) setState(STATE.PLAYING);
+      }
     }
   }
 
@@ -513,6 +536,11 @@ const Game = (() => {
         InputHandler.state.mouseY,
         player
       );
+    }
+
+    // 인벤토리 패널 (PLAYING/PAUSED 상태에서 I키로 토글)
+    if (inventoryOpen && (state === STATE.PLAYING || state === STATE.PAUSED)) {
+      TetrisGrid.drawInventory(ctx, Renderer.getWidth(), Renderer.getHeight());
     }
   }
 

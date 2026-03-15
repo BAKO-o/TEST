@@ -539,7 +539,7 @@ const EnemyManager = (() => {
           const isLowTier = !e.isBoss && (maxActiveTier - e.tier >= 2);
           if (!isLowTier) {
             const dmg = Math.floor(ENEMY_DAMAGE * (ENEMY_TYPES[e.type]?.damageMult ?? 1));
-            player.takeDamage(dmg);
+            TetrisGrid.hitShip(e.x, e.y, dmg, player);
           }
           e.contactCooldown = CONTACT_COOLDOWN;
           const { dx:pdx, dy:pdy } = Collision.wrappedDelta(player.x, player.y, e.x, e.y, worldW, worldH);
@@ -564,7 +564,7 @@ const EnemyManager = (() => {
       if (p.lifetime <= 0) { p.active = false; continue; }
       const { dx, dy } = Collision.wrappedDelta(p.x, p.y, player.x, player.y, worldW, worldH);
       if (Math.hypot(dx, dy) < p.radius + player.hitboxRadius * 0.5) {
-        player.takeDamage(p.damage); p.active = false;
+        TetrisGrid.hitShip(p.x, p.y, p.damage, player); p.active = false;
       }
     }
 
@@ -614,7 +614,7 @@ const EnemyManager = (() => {
             drop.moduleType=TetrisGrid.randomModuleKey(); drop.lifetime=MODULE_DROP_LIFETIME;
           }
         }
-        if (_player) _player.scrap += 20 + Math.floor(Math.random() * 11); // 20~30 스크랩
+        if (_player) _player.scrap += 10 + Math.floor(Math.random() * 6); // 10~15 스크랩
       } else {
         // 일반 적: 15% 확률 모듈 드랍 + 소량 스크랩
         if (Math.random() < MODULE_DROP_CHANCE) {
@@ -624,7 +624,7 @@ const EnemyManager = (() => {
             drop.moduleType=TetrisGrid.randomModuleKey(); drop.lifetime=MODULE_DROP_LIFETIME;
           }
         }
-        if (_player) _player.scrap += 1 + Math.floor(Math.random() * 3); // 1~3 스크랩
+        if (_player) _player.scrap += Math.random() < 0.5 ? 1 : 0; // 0~1 스크랩
         // 분열 처리
         if (enemy.type === 'SPLITTER' && !enemy.isSplit) { for (let i=0;i<3;i++) _spawnAt(enemy.x, enemy.y, 'SWARM'); }
         if (enemy.type === 'SENTINEL' && !enemy.isSplit) { for (let i=0;i<2;i++) _spawnAt(enemy.x, enemy.y, 'GRUNT'); }

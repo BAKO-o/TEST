@@ -20,6 +20,9 @@ const InputHandler = (() => {
     openAssembly: false, // Q 키 — 모듈 조립화면 열기 (consumeOpenAssembly()으로 소비)
     rotate: false,       // R 키 — 조립 UI에서 모듈 회전 (consumeRotate()으로 소비)
     expand: false,       // E 키 — 조립 UI에서 함체 슬롯 증설 (consumeExpand()으로 소비)
+    inventory: false,    // I 키 — 인벤토리 토글 (consumeInventory()으로 소비)
+    mouseHeld:     false, // 마우스 버튼 누르고 있는 동안 true
+    mouseReleased: false, // 마우스 버튼 뗀 프레임만 true (consumeMouseReleased()로 소비)
   };
 
   // 키 코드 → state 필드 매핑
@@ -42,10 +45,17 @@ const InputHandler = (() => {
     if (e.code === 'KeyQ') state.openAssembly = true;
     if (e.code === 'KeyR') state.rotate = true;
     if (e.code === 'KeyE') state.expand = true;
+    if (e.code === 'KeyI') state.inventory = true;
   }
 
   function onMouseDown() {
     state.clicked = true;
+    state.mouseHeld = true;
+  }
+
+  function onMouseUp() {
+    state.mouseHeld = false;
+    state.mouseReleased = true;
   }
 
   function onKeyUp(e) {
@@ -63,6 +73,7 @@ const InputHandler = (() => {
     window.addEventListener('keyup', onKeyUp);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mouseup',   onMouseUp);
   }
 
   /** 일시정지 플래그를 소비하고 반환 (한 프레임에 한 번만 true) */
@@ -107,7 +118,21 @@ const InputHandler = (() => {
     return v;
   }
 
-  return { init, state, consumePause, consumeClick, consumeSkip, consumeOpenAssembly, consumeRotate, consumeExpand };
+  /** I키 인벤토리 토글 플래그를 소비하고 반환 */
+  function consumeInventory() {
+    const v = state.inventory;
+    state.inventory = false;
+    return v;
+  }
+
+  /** 마우스 버튼 릴리즈 플래그를 소비하고 반환 (드래그 드롭 전용) */
+  function consumeMouseReleased() {
+    const v = state.mouseReleased;
+    state.mouseReleased = false;
+    return v;
+  }
+
+  return { init, state, consumePause, consumeClick, consumeSkip, consumeOpenAssembly, consumeRotate, consumeExpand, consumeInventory, consumeMouseReleased };
 })();
 
 // ES Module 방식으로 전역 접근 허용

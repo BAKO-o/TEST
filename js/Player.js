@@ -36,10 +36,10 @@ class Player {
     this.radius = 18;         // 기본 충돌 반지름
     this.hitboxRadius = 18;   // 모듈 부착 후 재계산되는 실제 충돌 반지름
 
-    // ── HP 시스템
-    this.maxHp = 100;
-    this.hp    = 100;
-    this.invincibleTime = 0; // 피격 후 무적 시간(s), 깜빡임 효과용
+    // ── HP 시스템 (탈출포트 코어 HP — 장갑판 없이 직격 시 감소)
+    this.maxHp = 10;  // 코어 기본 HP, 업그레이드 불가
+    this.hp    = 10;
+    this.invincibleTime = 0; // 코어 피격 후 무적 시간(s)
 
     // ── 레벨 / XP
     this.level   = 1;
@@ -124,13 +124,11 @@ class Player {
    * 피격 처리
    * @param {number} dmg - 데미지 값
    */
+  /** 코어 직접 피격 (장갑판이 없을 때 호출) */
   takeDamage(dmg) {
-    if (this.invincibleTime > 0) return; // 무적 시간 중 무시
-    // 장갑 감소: armorReduction 비율만큼 피해 감소 (최대 75%)
-    const armor = Math.min(0.75, this.armorReduction);
-    const actualDmg = Math.max(1, dmg * (1 - armor));
-    this.hp = Math.max(0, this.hp - actualDmg);
-    this.invincibleTime = 0.6; // 0.6초 무적
+    if (this.invincibleTime > 0) return;
+    this.hp = Math.max(0, this.hp - Math.max(1, dmg));
+    this.invincibleTime = 1.0; // 1초 무적 (코어 노출 상황 보정)
   }
 
   /** XP 획득 및 레벨업 체크
