@@ -262,6 +262,14 @@ kbd {
   line-height: 1.5;
 }
 
+/* ── 시작 화면 버튼 행 ── */
+.start-btn-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+
 /* ── 버튼 ── */
 .btn-primary {
   background: linear-gradient(135deg, #1a4a9f, #2563eb);
@@ -285,6 +293,203 @@ kbd {
 
 .btn-primary:active {
   transform: translateY(0);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #7dd3fc;
+  border: 1px solid rgba(99,179,237,0.4);
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: all 0.18s ease;
+  pointer-events: auto;
+}
+
+.btn-secondary:hover {
+  background: rgba(99,179,237,0.1);
+  border-color: rgba(99,179,237,0.7);
+  transform: translateY(-2px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* ── 게임 방법 튜토리얼 오버레이 ── */
+.howto-box {
+  max-width: 640px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 36px;
+  position: relative;
+  text-align: left;
+}
+
+.howto-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: #93c5fd;
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.howto-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: #5577aa;
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.15s;
+  pointer-events: auto;
+}
+
+.howto-close:hover {
+  color: #93c5fd;
+}
+
+.howto-scroll {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99,179,237,0.25) transparent;
+}
+
+.howto-scroll::-webkit-scrollbar { width: 5px; }
+.howto-scroll::-webkit-scrollbar-track { background: transparent; }
+.howto-scroll::-webkit-scrollbar-thumb { background: rgba(99,179,237,0.25); border-radius: 4px; }
+
+.howto-section {
+  margin-bottom: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(100,140,200,0.15);
+}
+
+.howto-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.howto-h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fbbf24;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.howto-section > p {
+  font-size: 13px;
+  color: #8899bb;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.howto-keys {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.howto-key-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #8899bb;
+}
+
+.howto-key-row kbd {
+  min-width: 80px;
+  text-align: center;
+}
+
+.howto-tip-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.howto-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: #8899bb;
+  line-height: 1.6;
+}
+
+.tip-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.howto-tip strong {
+  color: #c0d8ff;
+}
+
+.howto-tier-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.howto-tier {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid;
+  border-radius: 6px;
+  padding: 7px 12px;
+}
+
+.tier-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tier-pct {
+  margin-left: auto;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.howto-researcher-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #8899bb;
+}
+
+/* ── 버전 표시 ── */
+#version-display {
+  position: fixed;
+  bottom: 10px;
+  right: 14px;
+  font-size: 11px;
+  color: #2a3a55;
+  font-family: monospace;
+  pointer-events: none;
+  z-index: 200;
+  letter-spacing: 0.06em;
 }
 
 /* ── 모듈 뱃지 ── */

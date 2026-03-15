@@ -23,6 +23,8 @@ const InputHandler = (() => {
     inventory: false,    // I 키 — 인벤토리 토글 (consumeInventory()으로 소비)
     mouseHeld:     false, // 마우스 버튼 누르고 있는 동안 true
     mouseReleased: false, // 마우스 버튼 뗀 프레임만 true (consumeMouseReleased()로 소비)
+    selectPrev: false,   // W 키 — 조립 UI에서 이전 모듈 선택 (consumeSelectPrev()으로 소비)
+    selectNext: false,   // S 키 — 조립 UI에서 다음 모듈 선택 (consumeSelectNext()으로 소비)
   };
 
   // 키 코드 → state 필드 매핑
@@ -46,6 +48,8 @@ const InputHandler = (() => {
     if (e.code === 'KeyR') state.rotate = true;
     if (e.code === 'KeyE') state.expand = true;
     if (e.code === 'KeyI') state.inventory = true;
+    if (e.code === 'KeyW' || e.code === 'ArrowUp')   state.selectPrev = true;
+    if (e.code === 'KeyS' || e.code === 'ArrowDown') state.selectNext = true;
   }
 
   function onMouseDown() {
@@ -132,7 +136,21 @@ const InputHandler = (() => {
     return v;
   }
 
-  return { init, state, consumePause, consumeClick, consumeSkip, consumeOpenAssembly, consumeRotate, consumeExpand, consumeInventory, consumeMouseReleased };
+  /** W키 이전 모듈 선택 플래그 소비 (조립 UI 전용) */
+  function consumeSelectPrev() {
+    const v = state.selectPrev;
+    state.selectPrev = false;
+    return v;
+  }
+
+  /** S키 다음 모듈 선택 플래그 소비 (조립 UI 전용) */
+  function consumeSelectNext() {
+    const v = state.selectNext;
+    state.selectNext = false;
+    return v;
+  }
+
+  return { init, state, consumePause, consumeClick, consumeSkip, consumeOpenAssembly, consumeRotate, consumeExpand, consumeInventory, consumeMouseReleased, consumeSelectPrev, consumeSelectNext };
 })();
 
 // ES Module 방식으로 전역 접근 허용
