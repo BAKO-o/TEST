@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AP3: 잔해의 귀환</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- 메인 게임 캔버스 -->
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- HUD 오버레이 -->
+  <div id="hud">
+    <div id="hud-top-left">
+      <div class="stat-bar-wrap">
+        <span class="stat-label">HP</span>
+        <div class="stat-bar-bg"><div id="hp-bar" class="stat-bar hp"></div></div>
+        <span id="hp-text" class="stat-text">100/100</span>
+      </div>
+      <div class="stat-bar-wrap">
+        <span class="stat-label">XP</span>
+        <div class="stat-bar-bg"><div id="xp-bar" class="stat-bar xp"></div></div>
+        <span id="xp-text" class="stat-text">Lv.1</span>
+      </div>
+    </div>
+    <div id="hud-top-right">
+      <div class="hud-stat">⏱ <span id="timer">00:00</span></div>
+      <div class="hud-stat">💀 <span id="kill-count">0</span></div>
+      <div class="hud-stat" id="wave-info">Wave <span id="wave-num">1</span></div>
+      <div class="hud-stat" id="wave-kill-info">🎯 <span id="wave-kill">0/8</span></div>
+      <div class="hud-stat hidden" id="module-badge">📦 <span id="module-count">0</span> <span class="hud-key-hint">[Q]</span></div>
+      <div class="hud-stat" id="scrap-badge">🔩 <span id="scrap-count">0</span></div>
+    </div>
+  </div>
+
+  <!-- 일시정지 오버레이 -->
+  <div id="overlay-pause" class="overlay hidden">
+    <div class="overlay-box">
+      <h2>일시정지</h2>
+      <p>ESC 또는 P 키로 재개</p>
+    </div>
+  </div>
+
+  <!-- 레벨업 / 모듈 선택 팝업 (Phase 3용 확장 예정) -->
+  <div id="overlay-levelup" class="overlay hidden">
+    <div class="overlay-box levelup-box">
+      <h2>🚀 레벨 업!</h2>
+      <p class="levelup-sub">업그레이드를 선택하세요</p>
+      <div id="upgrade-choices" class="upgrade-grid"></div>
+    </div>
+  </div>
+
+  <!-- 웨이브 휴식 오버레이 -->
+  <div id="overlay-rest" class="overlay hidden" style="pointer-events:none;background:rgba(0,2,20,0.55)">
+    <div class="overlay-box" style="background:transparent;border:none;box-shadow:none;text-align:center">
+      <div id="rest-title" style="font-size:1.4rem;color:#93c5fd;letter-spacing:.1em">다음 웨이브 준비</div>
+      <div id="rest-timer" style="font-size:4.5rem;font-weight:bold;color:#ffffff;text-shadow:0 0 20px #60a5fa">6</div>
+    </div>
+  </div>
+
+  <!-- 게임 오버 오버레이 -->
+  <div id="overlay-gameover" class="overlay hidden">
+    <div class="overlay-box">
+      <h2>💥 탈출 실패</h2>
+      <p id="gameover-stats"></p>
+      <button id="btn-restart" class="btn-primary">다시 시작</button>
+    </div>
+  </div>
+
+  <!-- 게임 시작 화면 -->
+  <div id="overlay-start" class="overlay">
+    <div class="overlay-box start-box">
+      <h1 class="game-title">AP3: 잔해의 귀환</h1>
+      <p class="game-subtitle">RETURN FROM THE WRECKAGE</p>
+      <p class="story-text">
+        머나먼 우주, 연구선 AP3호가 우주 해적에게 격파됐다.<br/>
+        살아남은 4명의 연구원 <strong>송, 건, 학, 종</strong>은<br/>
+        탈출 포트를 몰아 본부로 귀환해야 한다.<br/>
+        <span style="color:#fbbf24;font-size:0.88em">적의 잔해(Scrap)를 수거하여 함체를 증설하라.</span>
+      </p>
+      <div class="controls-guide">
+        <span><kbd>W A S D</kbd> 이동</span>
+        <span><kbd>Mouse</kbd> 조준·회전</span>
+        <span><kbd>Click</kbd> 포탄 발사</span>
+        <span><kbd>Q</kbd> 모듈 조립</span>
+        <span><kbd>E</kbd> 슬롯 증설 (조립 중)</span>
+        <span><kbd>ESC / P</kbd> 일시정지</span>
+      </div>
+      <button id="btn-start" class="btn-primary">출발하기</button>
+    </div>
+  </div>
+
+  <!-- 스크립트 로드 순서: 의존성 없는 것부터 (window 전역 패턴) -->
+  <script src="js/InputHandler.js"></script>
+  <script src="js/Renderer.js"></script>
+  <script src="js/Collision.js"></script>
+  <script src="js/Player.js"></script>
+  <script src="js/EnemyManager.js"></script>
+  <script src="js/WeaponSystem.js"></script>
+  <script src="js/TetrisGrid.js"></script>
+  <script src="js/Game.js"></script>
+</body>
+</html>
